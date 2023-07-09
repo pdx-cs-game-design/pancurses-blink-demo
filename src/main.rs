@@ -23,19 +23,27 @@ fn polar(center: Coord, radius: f32, angle:f32) -> Coord {
 }
 
 fn main() {
-    let _pi = std::f32::consts::PI;
+    let pi = std::f32::consts::PI;
     let window = initscr();
     let lr = Coord::new(window.get_max_y(), window.get_max_x());
     let center = Coord::new(lr.row / 2, lr.col / 2);
-    let radius = lr.row.min(lr.col) as f32 / 2.0;
-    let angle = 0.0f32;
-    let posn = polar(center, radius, angle);
-    let frame_time = Duration::from_millis(1000);
+    let radius = lr.row.min(lr.col) as f32 / 2.0 - 2.0;
+    let mut angle = 0.0f32;
+    let mut posn = polar(center, radius, angle);
+    let frame_time = Duration::from_millis(50);
 
-    window.mvaddch(posn.row, posn.col, '#');
-    window.refresh();
-    sleep(frame_time);
-                   
-    endwin();
-    println!("{:?}", posn);
+    loop {
+        window.mvaddch(posn.row, posn.col, ' ');
+
+        angle += pi / 128.0;
+        while angle >= 2.0 * pi {
+            angle -= 2.0 * pi;
+        }
+        posn = polar(center, radius, angle);
+
+        window.mvaddch(posn.row, posn.col, '#');
+        window.mv(posn.row, posn.col);
+        window.refresh();
+        sleep(frame_time);
+    }
 }
