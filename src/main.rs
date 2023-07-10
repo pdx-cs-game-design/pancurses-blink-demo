@@ -1,3 +1,4 @@
+use std::f32::consts::PI;
 use std::thread::sleep;
 use std::time::Duration;
 
@@ -16,14 +17,13 @@ impl Coord {
     }
 }
 
-fn polar(center: Coord, radius: f32, angle:f32) -> Coord {
-    let row =  center.row - (radius * angle.sin()).floor() as i32;
-    let col =  center.col - (radius * angle.cos()).floor() as i32;
+fn polar(center: Coord, radius: f32, angle: f32) -> Coord {
+    let row = center.row - (radius * angle.sin()).floor() as i32;
+    let col = center.col - (radius * angle.cos()).floor() as i32;
     Coord::new(row, col)
 }
 
 fn main() {
-    let pi = std::f32::consts::PI;
     let window = initscr();
     let lr = Coord::new(window.get_max_y(), window.get_max_x());
     let center = Coord::new(lr.row / 2, lr.col / 2);
@@ -33,17 +33,16 @@ fn main() {
     let frame_time = Duration::from_millis(50);
 
     loop {
-        window.mvaddch(posn.row, posn.col, ' ');
+        angle = (angle + PI / 128.0) % (2.0 * PI);
+        let new_posn = polar(center, radius, angle);
 
-        angle += pi / 128.0;
-        while angle >= 2.0 * pi {
-            angle -= 2.0 * pi;
+        if new_posn != posn {
+            window.mvaddch(posn.row, posn.col, ' ');
+            posn = new_posn;
+            window.mvaddch(posn.row, posn.col, '#');
+            window.mv(posn.row, posn.col);
+            window.refresh();
         }
-        posn = polar(center, radius, angle);
-
-        window.mvaddch(posn.row, posn.col, '#');
-        window.mv(posn.row, posn.col);
-        window.refresh();
         sleep(frame_time);
     }
 }
