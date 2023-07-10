@@ -25,6 +25,7 @@ fn polar(center: Coord, radius: f32, angle: f32) -> Coord {
 fn main() {
     let window = initscr();
     assert_eq!(0, set_blink(true));
+    let _old_cs = curs_set(0);
     let lr = Coord::new(window.get_max_y(), window.get_max_x());
     let center = Coord::new(lr.row / 2, lr.col / 2);
     let radius = lr.row.min(lr.col) as f32 / 2.0 - 2.0;
